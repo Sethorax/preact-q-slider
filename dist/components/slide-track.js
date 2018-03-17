@@ -10,10 +10,6 @@ var _preact = require('preact');
 
 var _preact2 = _interopRequireDefault(_preact);
 
-var _propTypes = require('prop-types');
-
-var _propTypes2 = _interopRequireDefault(_propTypes);
-
 var _classnames = require('classnames');
 
 var _classnames2 = _interopRequireDefault(_classnames);

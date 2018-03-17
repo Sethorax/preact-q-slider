@@ -1,4 +1,4 @@
-'use strict';
+"use strict";
 
 Object.defineProperty(exports, "__esModule", {
     value: true
@@ -6,13 +6,9 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _preact = require('preact');
+var _preact = require("preact");
 
 var _preact2 = _interopRequireDefault(_preact);
-
-var _propTypes = require('prop-types');
-
-var _propTypes2 = _interopRequireDefault(_propTypes);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -32,22 +28,22 @@ var SliderNavigation = function (_Preact$Component) {
     }
 
     _createClass(SliderNavigation, [{
-        key: 'render',
+        key: "render",
         value: function render() {
-            var NextArrow = this.props.nextArrow ? React.cloneElement(this.props.nextArrow, { onClick: this.props.onNextClick }) : (0, _preact.h)(
-                'button',
+            var NextArrow = this.props.nextArrow ? _preact2.default.cloneElement(this.props.nextArrow, { onClick: this.props.onNextClick }) : (0, _preact.h)(
+                "button",
                 { onClick: this.props.onNextClick },
-                'Next'
+                "Next"
             );
-            var PrevArrow = this.props.prevArrow ? React.cloneElement(this.props.prevArrow, { onClick: this.props.onPrevClick }) : (0, _preact.h)(
-                'button',
+            var PrevArrow = this.props.prevArrow ? _preact2.default.cloneElement(this.props.prevArrow, { onClick: this.props.onPrevClick }) : (0, _preact.h)(
+                "button",
                 { onClick: this.props.onPrevClick },
-                'Prev'
+                "Prev"
             );
 
             return (0, _preact.h)(
-                'div',
-                { className: 'q-slider__navigation' },
+                "div",
+                { className: "q-slider__navigation" },
                 PrevArrow,
                 NextArrow
             );

@@ -10,13 +10,13 @@ var _preact = require('preact');
 
 var _preact2 = _interopRequireDefault(_preact);
 
-var _propTypes = require('prop-types');
-
-var _propTypes2 = _interopRequireDefault(_propTypes);
-
 var _classnames = require('classnames');
 
 var _classnames2 = _interopRequireDefault(_classnames);
+
+var _preactHtmlConverter = require('preact-html-converter');
+
+var _preactHtmlConverter2 = _interopRequireDefault(_preactHtmlConverter);
 
 var _draggableTrack = require('./draggable-track.jsx');
 
@@ -85,9 +85,12 @@ var Slider = function (_Preact$Component) {
     }, {
         key: 'componentDidMount',
         value: function componentDidMount() {
-            if (this.props.children) {
+            if (this.props.children.length > 0) {
                 this.setState({ renderChildren: true });
                 this.props.setSlides(this.props.children);
+            } else if (this.props.slidesHTML) {
+                var slides = new _preactHtmlConverter2.default().convert(this.props.slidesHTML);
+                this.props.setSlides(slides);
             }
         }
     }, {
@@ -216,17 +219,6 @@ var Slider = function (_Preact$Component) {
 
     return Slider;
 }(_preact2.default.Component);
-
-Slider.propTypes = {
-    slidesToShow: _propTypes2.default.number,
-    slidesToScroll: _propTypes2.default.number,
-    rewindOnEnd: _propTypes2.default.bool,
-    fade: _propTypes2.default.bool,
-    fadeDuration: _propTypes2.default.number,
-    showArrows: _propTypes2.default.bool,
-    nextArrow: _propTypes2.default.element,
-    prevArrow: _propTypes2.default.element
-};
 
 Slider.defaultProps = {
     slidesToShow: 1,

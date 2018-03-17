@@ -1,5 +1,4 @@
 import Preact, { h } from 'preact';
-import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import { connect } from 'unistore/preact';
 import actions from '../actions';

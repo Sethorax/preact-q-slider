@@ -44,7 +44,7 @@ module.exports = env => {
         mode: (env === 'dev') ? 'development' : 'production',
         plugins: [],
         output: {
-            filename: 'react-q-slider.js',
+            filename: 'preact-q-slider.js',
             chunkFilename: '[name].js',
             path: path.resolve('./dist')
         }

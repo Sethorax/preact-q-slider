@@ -1,12 +1,11 @@
 import Preact, { h } from 'preact';
-import PropTypes from 'prop-types';
 import classNames from 'classnames';
+import PreactHTMLConverter from 'preact-html-converter';
 import DraggableTrack from './draggable-track.jsx';
 import SlideTrack from './slide-track.jsx';
 import SliderNavigation from './slider-navigation.jsx';
 import { connect } from 'unistore/preact';
 import actions from '../actions';
-
 
 /**
  * Slider Component
@@ -40,9 +39,12 @@ class Slider extends Preact.Component {
     }
 
     componentDidMount() {
-        if (this.props.children) {
+        if (this.props.children.length > 0) {
             this.setState({ renderChildren: true });
             this.props.setSlides(this.props.children);
+        } else if (this.props.slidesHTML) {
+            const slides = (new PreactHTMLConverter()).convert(this.props.slidesHTML);
+            this.props.setSlides(slides);
         }
     }
 
@@ -158,17 +160,6 @@ class Slider extends Preact.Component {
         );
     }
 }
-
-Slider.propTypes = {
-    slidesToShow: PropTypes.number,
-    slidesToScroll: PropTypes.number,
-    rewindOnEnd: PropTypes.bool,
-    fade: PropTypes.bool,
-    fadeDuration: PropTypes.number,
-    showArrows: PropTypes.bool,
-    nextArrow: PropTypes.element,
-    prevArrow: PropTypes.element
-};
 
 Slider.defaultProps = {
     slidesToShow: 1,
