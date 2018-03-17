@@ -1,0 +1,32 @@
+{
+  "name": "preact-q-slider",
+  "version": "0.1.0",
+  "main": "./dist",
+  "license": "MIT",
+  "dependencies": {
+    "babel-plugin-transform-react-jsx": "^6.24.1",
+    "classnames": "^2.2.5",
+    "preact": "^8.2.7",
+    "prop-types": "^15.6.1",
+    "unistore": "^3.0.4"
+  },
+  "devDependencies": {
+    "babel": "^6.23.0",
+    "babel-cli": "^6.26.0",
+    "babel-core": "^6.26.0",
+    "babel-loader": "^7.1.4",
+    "babel-preset-env": "^1.6.1",
+    "css-loader": "^0.28.11",
+    "node-sass": "^4.7.2",
+    "sass-loader": "^6.0.7",
+    "style-loader": "^0.20.3",
+    "webpack": "^4.1.1",
+    "webpack-cli": "^2.0.12",
+    "webpack-dev-server": "^3.1.1"
+  },
+  "scripts": {
+    "watch": "webpack-dev-server --content-base build --env=dev",
+    "build": "babel ./src --out-dir ./dist",
+    "prepublish": "npm run build"
+  }
+}
