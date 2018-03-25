@@ -32,7 +32,7 @@
   },
   "scripts": {
     "watch": "webpack-dev-server --content-base build --env=dev",
-    "cleanup": "rimraf ./tmp",
+    "cleanup": "rimraf ./tmp && rimraf ./dist/__tmp.js",
     "build:pre": "BABEL_ENV=production babel ./src --out-dir ./tmp",
     "build:main": "microbundle tmp/index.js -o dist/preact-q-slider.js -f cjs --external all --sourcemap false",
     "build:stylesheet": "webpack -p --env=production --config=webpack.config.dist.js",

@@ -40,8 +40,7 @@ module.exports = env => {
             new MiniCssExtractPlugin()
         ],
         output: {
-            filename: '[name].js',
-            chunkFilename: '[name].js',
+            filename: '__tmp.js',
             path: path.resolve('./dist')
         }
     };
