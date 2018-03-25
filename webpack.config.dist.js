@@ -1,7 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const webpack = require('webpack');
-const nodeExternals = require('webpack-node-externals');
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 
 /**
  * WEBPACK CONFIG
@@ -9,26 +9,16 @@ const nodeExternals = require('webpack-node-externals');
 module.exports = env => {
     return {
         entry: {
-            'preact-q-slider': (env === 'production') ? './src/index.js' : './build/entry.js',
-            styles: './src/styles.scss'
+            'preact-q-slider': './src/styles.scss'
         },
         module: {
             rules: [
                 {
-                    test: /\.(js|jsx)$/,
-                    exclude: new RegExp(`node_modules`),
-                    use: {
-                        loader: 'babel-loader'
-                    }
-                }, {
                     test: /\.(css|sass|scss)$/,
                     exclude: /(bower_components)/,
-                    use: [{
-                        loader: 'style-loader',
-                        options: {
-                            sourceMap: (env === 'dev')
-                        }
-                    }, {
+                    use: [
+                        MiniCssExtractPlugin.loader,
+                    {
                         loader: 'css-loader',
                         options: {
                             sourceMap: (env === 'dev'),
@@ -39,16 +29,16 @@ module.exports = env => {
                         options: {
                             sourceMap: (env === 'dev')
                         }
+                    }, {
+                        loader: 'postcss-loader'
                     }]
                 }
             ]
         },
-        mode: (env === 'dev') ? 'development' : 'production',
-        plugins: [],
-        externals: (env === 'dev') ? {} : nodeExternals(),
-        resolve: {
-            extensions: ['.js', '.jsx']
-        },
+        mode: 'production',
+        plugins: [
+            new MiniCssExtractPlugin()
+        ],
         output: {
             filename: '[name].js',
             chunkFilename: '[name].js',
