@@ -1,5 +1,4 @@
 import createStore from 'unistore';
-import devtools from 'unistore/devtools';
 
 /** 
  * Define initial state
