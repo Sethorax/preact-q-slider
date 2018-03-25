@@ -1,6 +1,6 @@
 import Preact, { h } from 'preact';
 import classNames from 'classnames';
-import PreactHTMLConverter from 'preact-html-converter';
+import { PreactHTMLConverter } from 'preact-html-converter/browser';
 import DraggableTrack from './draggable-track';
 import SlideTrack from './slide-track';
 import SliderNavigation from './slider-navigation';
