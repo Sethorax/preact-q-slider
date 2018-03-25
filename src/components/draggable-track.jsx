@@ -1,7 +1,7 @@
 import Preact, { h } from 'preact';
 import { connect } from 'unistore/preact';
-import actions from '../actions';
-import Util from '../utils';
+import actions from '../actions/index';
+import Util from '../utils/index';
 
 /**
  * @todo Move option-type props to the store
@@ -15,6 +15,8 @@ class DraggableTrack extends Preact.Component {
     }
 
     handleMouseTouchDown(event) {
+        if (this.props.slides.length <= this.props.slidesToShow) return;
+
         const clientX = Util.getClientPosFromTouchOrMouseEvent(event, this.props.vertical);
 
         this.grabbedStartingX = clientX;
@@ -22,7 +24,7 @@ class DraggableTrack extends Preact.Component {
     }
 
     handleMouseTouchMove(event) {
-        if (!this.props.isGrabbing) return;
+        if (!this.props.isGrabbing || this.props.slides.length <= this.props.slidesToShow) return;
 
         const clientX = Util.getClientPosFromTouchOrMouseEvent(event, this.props.vertical);
         const distance = (this.grabbedStartingX - clientX) * 100 / this.props.getSliderWidth();
@@ -30,6 +32,8 @@ class DraggableTrack extends Preact.Component {
     }
 
     handleMouseTouchUp() {
+        if (this.props.slides.length <= this.props.slidesToShow) return;
+
         this.grabbedStartingX = 0;
 
         let draggedSlides = parseFloat(this.props.grabbedTrackOffset) / (100 / parseInt(this.props.slidesToShow));
@@ -60,4 +64,4 @@ class DraggableTrack extends Preact.Component {
     }
 }
 
-export default connect(['isGrabbing', 'grabbedTrackOffset', 'currentSlide'], actions)(DraggableTrack);
+export default connect(['isGrabbing', 'grabbedTrackOffset', 'currentSlide', 'slides'], actions)(DraggableTrack);

@@ -1,7 +1,7 @@
 import Preact, { h } from 'preact';
 import classNames from 'classnames';
 import { connect } from 'unistore/preact';
-import actions from '../actions';
+import actions from '../actions/index';
 
 /**
  * @todo Move option-type props to the store
@@ -21,6 +21,24 @@ class SlideTrack extends Preact.Component {
         };
     }
 
+    componentWillMount() {
+        this.onClickStartX = 0;
+        this.onClickStartY = 0;
+    }
+
+    handleSlideMouseTouchDown(event) {
+        this.onClickStartX = Utils.getClientPosFromTouchOrMouseEvent(event);
+        this.onClickStartY = Utils.getClientPosFromTouchOrMouseEvent(event, true);
+    }
+
+    handleSlideClick(event, index) {
+        if (this.onClickStartX !== Utils.getClientPosFromTouchOrMouseEvent(event) || this.onClickStartY !== Utils.getClientPosFromTouchOrMouseEvent(event, true)) return;
+
+        if (typeof this.props.onSlideClick === 'function') {
+            this.props.onSlideClick(event, index);
+        }
+    }
+
     renderSlidingTrack() {
         const slideWidth = 100 / this.props.slidesToShow;
         const trackOffset = (slideWidth * this.props.currentSlide * -1) - this.props.grabbedTrackOffset;
@@ -31,7 +49,7 @@ class SlideTrack extends Preact.Component {
                 style={{ transform: this.props.vertical ? `translate3d(0, ${trackOffset}%, 0)` : `translate3d(${trackOffset}%, 0, 0)` }}
             >
                 {this.props.slides.map((slide, index) => (
-                    <div key={index} className="q-slider__slide" style={this.props.vertical ? { height: `${slideWidth}%` } : { width: `${slideWidth}%` }}>{slide}</div>
+                    <div key={index} onMouseDown={this.handleSlideMouseTouchDown.bind(this)} onTouchStart={this.handleSlideMouseTouchDown.bind(this)} onClick={event => this.handleSlideClick.bind(this)(event, index)} className="q-slider__slide" data-slide-index={index} style={this.props.vertical ? { height: `${slideWidth}%` } : { width: `${slideWidth}%` }}>{slide}</div>
                 ))}
             </div>
         );
@@ -53,43 +71,22 @@ class SlideTrack extends Preact.Component {
     componentDidUpdate() {
         if (this.props.fade) {
             if (this.props.currentSlide !== this.state.currentSlideIndex && !this.props.isFading) {
-                let nextSlideIndex;
-                let goForward = true;
-
-
-                if (this.props.currentSlide !== 0 && this.props.lastSlide !== 0 && this.props.currentSlide > this.props.lastSlide) {
-                    goForward = true;
-                } else if (this.props.currentSlide !== 0 && this.props.lastSlide !== 0) {
-                    goForward = false;
-                } else if (this.props.lastSlide === 0 && this.props.currentSlide === 1) {
-                    goForward = true;
-                } else if (this.props.currentSlide === 0 && this.props.lastSlide === 1) {
-                    goForward = false;
-                } else if (this.props.currentSlide === 0 && this.props.lastSlide !== 1) {
-                    goForward = true;
-                } else if (this.props.lastSlide === 0) {
-                    goForward = false;
-                }
-
-                if (goForward) {
-                    nextSlideIndex = (this.state.currentSlideIndex < this.props.slides.length - 1) ? this.state.currentSlideIndex + 1 : 0;
-                } else {
-                    nextSlideIndex = (this.state.currentSlideIndex > 0) ? this.state.currentSlideIndex - 1 : this.props.slides.length - 1;
-                }
-                
-                if (this.state.nextSlideIndex !== nextSlideIndex) {
+                if (this.state.nextSlideIndex !== this.props.currentSlide) {
                     this.setState({
-                        nextSlide: this.props.slides[nextSlideIndex],
-                        nextSlideIndex
+                        nextSlideIndex: this.props.currentSlide,
+                        nextSlide: this.props.slides[this.props.currentSlide]
                     });
                 } else {
                     this.props.setFadingState(true);
-
+    
                     clearTimeout(this.fadeQueue);
                     this.fadeQueue = setTimeout(() => {
                         this.activeFadeSlide = (this.activeFadeSlide === 0) ? 1 : 0;
                         this.props.setFadingState(false);
-                        this.setState({ currentSlideIndex: this.props.currentSlide, currentSlide: this.props.slides[this.props.currentSlide] });
+                        this.setState({
+                            currentSlideIndex: this.state.nextSlideIndex,
+                            currentSlide: this.state.nextSlide
+                        });
                     }, this.props.fadeDuration);
                 }
             }

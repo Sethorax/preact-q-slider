@@ -1,5 +1,6 @@
 import Preact, { h } from 'preact';
-import QSlider from '../src/index';
+//import QSlider from '../src/index';
+import QSlider from '../dist/preact-q-slider';
 
 Preact.render(
     <QSlider

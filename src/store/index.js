@@ -16,4 +16,4 @@ const initialState = {
 /** 
  * Export the store with devtool support if not in production
  */
-export const createNewStore = () => process.env.NODE_ENV === 'production' ?  createStore(initialState) : devtools(createStore(initialState));
+export const createNewStore = () => createStore(initialState);

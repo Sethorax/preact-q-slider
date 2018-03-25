@@ -1,11 +1,12 @@
 import Preact, { h } from 'preact';
 import classNames from 'classnames';
 import PreactHTMLConverter from 'preact-html-converter';
-import DraggableTrack from './draggable-track.jsx';
-import SlideTrack from './slide-track.jsx';
-import SliderNavigation from './slider-navigation.jsx';
+import DraggableTrack from './draggable-track';
+import SlideTrack from './slide-track';
+import SliderNavigation from './slider-navigation';
+import SliderPagination from './slider-pagination';
 import { connect } from 'unistore/preact';
-import actions from '../actions';
+import actions from '../actions/index';
 
 /**
  * Slider Component
@@ -19,10 +20,6 @@ class Slider extends Preact.Component {
     constructor() {
         super();
 
-        this.state = {
-            renderChildren: false
-        };
-
         this.gotoNext = this.gotoNext.bind(this);
         this.gotoPrev = this.gotoPrev.bind(this);
         this.gotoSlide = this.gotoSlide.bind(this);
@@ -30,11 +27,21 @@ class Slider extends Preact.Component {
 
     componentWillMount() {
         this.slider = null;
+        this.autoplayPaused = false;
+        this.autoplayCycle = null;
+        this.lastAuoplayCycleStart = 0;
+        this.remainingAutoplayCycleDuration = 0;
 
         this.setMaxSlideOffset();
     }
 
-    componentDidUpdate() {
+    componentDidUpdate(prevProps) {
+        if (!prevProps.autoplay && this.props.autoplay) {
+            this.startAutoplay();
+        } else if (prevProps.autoplay && !this.props.autoplay) {
+            this.stopAutoplay();
+        }
+
         this.setMaxSlideOffset();
     }
 
@@ -46,6 +53,28 @@ class Slider extends Preact.Component {
             const slides = (new PreactHTMLConverter()).convert(this.props.slidesHTML);
             this.props.setSlides(slides);
         }
+
+        if (this.props.autoplay === true) {
+            this.startAutoplay();
+        }
+    }
+
+    startAutoplay() {
+        const cycleDuration = this.remainingAutoplayCycleDuration > 0 && this.remainingAutoplayCycleDuration < this.props.autoplaySpeed ? this.remainingAutoplayCycleDuration : this.props.autoplaySpeed;
+        this.runAutoplayCycle(cycleDuration);
+    }
+
+    stopAutoplay() {
+        this.remainingAutoplayCycleDuration = (new Date()).getTime() - this.lastAuoplayCycleStart;
+        clearTimeout(this.autoplayCycle);
+    }
+
+    runAutoplayCycle(cycleDuration = 1000) {
+        this.autoplayCycle = setTimeout(() => {
+            this.lastAuoplayCycleStart = (new Date()).getTime();
+            this.runAutoplayCycle(cycleDuration);
+            this.handleNextClick();
+        }, cycleDuration);
     }
 
     setMaxSlideOffset() {
@@ -113,11 +142,17 @@ class Slider extends Preact.Component {
     }
 
     handlePrevClick() {
-        if (this.props.rewindOnEnd || this.canGoPrev()) this.gotoPrev();
+        if ((this.props.slides.length >= this.props.slidesToShow && this.props.rewindOnEnd) || this.canGoPrev()) this.gotoPrev();
     }
 
     handleNextClick() {
-        if (this.props.rewindOnEnd || this.canGoNext()) this.gotoNext();
+        if ((this.props.slides.length >= this.props.slidesToShow && this.props.rewindOnEnd) || this.canGoNext()) this.gotoNext();
+    }
+
+    handlePaginationItemClick(event, key) {
+        if (this.props.slides.length < this.props.slidesToShow) return;
+
+        this.gotoSlide(key);
     }
 
     getSliderWidth() {
@@ -131,7 +166,7 @@ class Slider extends Preact.Component {
     render() {
         return (
             this.props.slides.length > 0 && (
-                <div className={classNames('q-slider__slider', { 'q-slider__slider_is-vertical': this.props.vertical })} ref={this.handleSliderRef.bind(this)}>
+                <div className={classNames('q-slider__slider', { 'q-slider__slider_is-vertical': this.props.vertical, 'q-slider__slider_no-sliding': this.props.slides.length <= this.props.slidesToShow })} ref={this.handleSliderRef.bind(this)}>
                     <DraggableTrack
                         vertical={this.props.vertical}
                         getSliderWidth={this.getSliderWidth.bind(this)}
@@ -144,6 +179,7 @@ class Slider extends Preact.Component {
                             fade={this.props.fade}
                             slidesToShow={this.props.slidesToShow}
                             fadeDuration={this.props.fadeDuration}
+                            onSlideClick={this.props.onSlideClick}
                         />
                     </DraggableTrack>
                     
@@ -154,6 +190,10 @@ class Slider extends Preact.Component {
                             nextArrow={this.props.nextArrow}
                             prevArrow={this.props.prevArrow}
                         />
+                    )}
+
+                    {this.props.showPagination && (
+                        <SliderPagination onPaginationItemClick={this.handlePaginationItemClick.bind(this)} slidesToShow={this.props.slidesToShow} />
                     )}
                 </div>
             )
@@ -166,7 +206,12 @@ Slider.defaultProps = {
     slidesToScroll: 1,
     fade: false,
     fadeDuration: 500,
-    showArrows: true
+    showArrows: true,
+    showPagination: true,
+    autoplay: false,
+    autoplaySpeed: 1000,
+    onSlideClick: () => {}
 };
+
 
 export default connect(['slides', 'isGrabbing', 'currentSlide', 'grabbedTrackOffset', 'isFading'], actions)(Slider);
