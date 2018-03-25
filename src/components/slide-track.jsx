@@ -1,6 +1,7 @@
 import Preact, { h } from 'preact';
 import classNames from 'classnames';
 import { connect } from 'unistore/preact';
+import Utils from '../utils/index';
 import actions from '../actions/index';
 
 /**
