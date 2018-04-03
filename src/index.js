@@ -21,7 +21,6 @@ export default class QSlider extends Preact.Component {
         };
 
         this.state = {
-            test: false,
             ready: false,
             initialProps: {...initialProps},
             currentProps: initialProps
