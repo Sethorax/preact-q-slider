@@ -109,11 +109,14 @@ describe('Slider', () => {
             expect(slider.component()._component._component.maxSlideOffset).toBe(2);
         });
 
-        it('should goto slide 2', async () => {
+        it('should goto slide 2', async (done) => {
             const slider = await createSlider();
             expect(store().getState().currentSlide).toBe(0);
             slider.component()._component._component.gotoSlide(2);
-            expect(store().getState().currentSlide).toBe(2);
+            setTimeout(() => {
+                expect(store().getState().currentSlide).toBe(2);
+                done();
+            }, 100);
         });
     
         it('should not break the sliding bounds.', async () => {

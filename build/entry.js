@@ -25,6 +25,14 @@ Preact.render(
         rewindOnEnd={true}
         fade={true}
         fadeDuration={1000}
+        canMove={() => {return true}}
+        beforeChange={() => {
+            return new Promise(resolve => {
+                setTimeout(() => {
+                    resolve();
+                }, 1000)
+            })
+        }}
         slidesHTML={'<img src="https://picsum.photos/900/600/?image=174" /><img src="https://picsum.photos/900/600/?image=542" /><img src="https://picsum.photos/900/600/?image=347" /><img src="https://picsum.photos/900/600/?image=75" />'}
     >
     </QSlider>

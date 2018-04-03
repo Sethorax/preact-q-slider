@@ -1,6 +1,6 @@
 {
   "name": "preact-q-slider",
-  "version": "0.1.13",
+  "version": "0.1.14",
   "main": "./dist/preact-q-slider.js",
   "license": "MIT",
   "dependencies": {
@@ -23,6 +23,7 @@
     "node-sass": "^4.7.2",
     "postcss-loader": "^2.1.3",
     "preact-render-spy": "^1.2.2",
+    "rimraf": "^2.6.2",
     "sass-loader": "^6.0.7",
     "style-loader": "^0.20.3",
     "webpack": "^4.1.1",

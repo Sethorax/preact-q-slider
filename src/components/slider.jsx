@@ -23,6 +23,7 @@ class Slider extends Preact.Component {
         this.gotoNext = this.gotoNext.bind(this);
         this.gotoPrev = this.gotoPrev.bind(this);
         this.gotoSlide = this.gotoSlide.bind(this);
+        this.canMove = this.canMove.bind(this);
     }
 
     componentWillMount() {
@@ -31,6 +32,7 @@ class Slider extends Preact.Component {
         this.autoplayCycle = null;
         this.lastAuoplayCycleStart = 0;
         this.remainingAutoplayCycleDuration = 0;
+        this.isWaitingForCallback = true;
 
         this.setMaxSlideOffset();
     }
@@ -56,6 +58,12 @@ class Slider extends Preact.Component {
 
         if (this.props.autoplay === true) {
             this.startAutoplay();
+        }
+    }
+
+    checkGotoSlideProp() {
+        if (this.props.gotoSlide !== null) {
+            this.gotoSlide(this.props.gotoSlide)
         }
     }
 
@@ -89,8 +97,16 @@ class Slider extends Preact.Component {
         return this.props.currentSlide < this.maxSlideOffset;
     }
 
+    canMove() {
+        if (this.props.isFading) return false;
+        if (this.isWaitingForCallback === false) return false;
+        if (this.props.canMove() === false) return false;
+
+        return true;
+    }
+
     gotoNext() {
-        if (this.props.isFading) return;
+        if (!this.canMove()) return;
 
         let slidesToAdvance;
 
@@ -102,11 +118,19 @@ class Slider extends Preact.Component {
             slidesToAdvance = this.maxSlideOffset - this.props.currentSlide;
         }
 
-        this.props.setCurrentSlide(this.props.currentSlide + slidesToAdvance);
+        if (this.props.beforeChange() && this.props.beforeChange().then) {
+            this.isWaitingForCallback = false;
+            this.props.beforeChange().then(() => {
+                this.props.setCurrentSlide(this.props.currentSlide + slidesToAdvance);
+                this.isWaitingForCallback = true;
+            });
+        } else {
+            this.props.setCurrentSlide(this.props.currentSlide + slidesToAdvance);
+        }
     }
 
     gotoPrev() {
-        if (this.props.isFading) return;
+        if (!this.canMove()) return;
 
         let slidesToGoBack;
 
@@ -118,11 +142,19 @@ class Slider extends Preact.Component {
             slidesToGoBack = this.props.currentSlide;
         }
 
-        this.props.setCurrentSlide(this.props.currentSlide - slidesToGoBack);
+        if (this.props.beforeChange() && this.props.beforeChange().then) {
+            this.isWaitingForCallback = false;
+            this.props.beforeChange().then(() => {
+                this.props.setCurrentSlide(this.props.currentSlide - slidesToGoBack);
+                this.isWaitingForCallback = true;
+            });
+        } else {
+            this.props.setCurrentSlide(this.props.currentSlide - slidesToGoBack);
+        }
     }
 
     gotoSlide(slideIndex, returnIndex = false) {
-        if (this.props.isFading) return;
+        if (!this.canMove()) return;
 
         let nextSlide;
 
@@ -137,7 +169,15 @@ class Slider extends Preact.Component {
         if (returnIndex) {
             return nextSlide;
         } else {
-            this.props.setCurrentSlide(nextSlide);
+            if (this.props.beforeChange() && this.props.beforeChange().then) {
+                this.isWaitingForCallback = false;
+                this.props.beforeChange().then(() => {
+                    this.props.setCurrentSlide(nextSlide);
+                    this.isWaitingForCallback = true;
+                });
+            } else {
+                this.props.setCurrentSlide(nextSlide);
+            }
         }
     }
 
@@ -210,7 +250,9 @@ Slider.defaultProps = {
     showPagination: true,
     autoplay: false,
     autoplaySpeed: 1000,
-    onSlideClick: () => {}
+    onSlideClick: () => {},
+    canMove: () => {},
+    beforeChange: () => {}
 };
 
 
