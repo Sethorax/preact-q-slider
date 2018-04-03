@@ -106,7 +106,7 @@ class SlideTrack extends Preact.Component {
         return (
             <div className={classNames('q-slider__track q-slider__track_fading-track', { 'q-slider__track_fading-track_is-fading': this.props.isFading })}>
                 <div
-                    className="q-slider__slide q-slider__slide_is-current"
+                className={classNames('q-slider__slide q-slider__slide_is-current', { 'q-slider__slide_is-active': this.activeFadeSlide === 0 })}
                     style={{
                         zIndex: this.activeFadeSlide === 0 ? 2 : 1,
                         opacity: this.activeFadeSlide === 0 && this.props.isFading ? 0 : 1,
@@ -115,7 +115,7 @@ class SlideTrack extends Preact.Component {
                     {this.activeFadeSlide === 0 ? this.state.currentSlide : this.state.nextSlide}
                 </div>
                 <div
-                    className="q-slider__slide q-slider__slide_is-next"
+                    className={classNames('q-slider__slide q-slider__slide_is-next', { 'q-slider__slide_is-active': this.activeFadeSlide === 1 })}
                     style={{
                         zIndex: this.activeFadeSlide === 1 ? 2 : 1,
                         opacity: this.activeFadeSlide === 1 && this.props.isFading ? 0 : 1,
