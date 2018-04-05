@@ -228,7 +228,7 @@ class Slider extends Preact.Component {
                         />
                     </DraggableTrack>
                     
-                    {this.props.showArrows && (
+                    {this.props.showArrows && this.props.slides.length > 1 && (
                         <SliderNavigation
                             onNextClick={this.handleNextClick.bind(this)}
                             onPrevClick={this.handlePrevClick.bind(this)}
@@ -237,7 +237,7 @@ class Slider extends Preact.Component {
                         />
                     )}
 
-                    {this.props.showPagination && (
+                    {this.props.showPagination && this.props.slides.length > 1 && (
                         <SliderPagination onPaginationItemClick={this.handlePaginationItemClick.bind(this)} slidesToShow={this.props.slidesToShow} />
                     )}
                 </div>
