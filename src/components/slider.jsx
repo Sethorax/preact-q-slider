@@ -53,7 +53,12 @@ class Slider extends Preact.Component {
             this.props.setSlides(this.props.children);
         } else if (this.props.slidesHTML) {
             const slides = (new PreactHTMLConverter()).convert(this.props.slidesHTML);
-            this.props.setSlides(slides);
+
+            if (slides.length) {
+                this.props.setSlides(slides);
+            } else {
+                this.props.setSlides([slides]);
+            }
         }
 
         if (this.props.autoplay === true) {

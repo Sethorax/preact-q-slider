@@ -33,7 +33,7 @@ Preact.render(
                 }, 1000)
             })
         }}
-        slidesHTML={'<img src="https://picsum.photos/900/600/?image=174" /><img src="https://picsum.photos/900/600/?image=542" /><img src="https://picsum.photos/900/600/?image=347" /><img src="https://picsum.photos/900/600/?image=75" />'}
+        slidesHTML={'<img src="https://picsum.photos/900/600/?image=174" />'}
     >
     </QSlider>
 , document.querySelector('.imageslider2'));
