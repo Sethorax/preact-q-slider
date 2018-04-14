@@ -1,12 +1,12 @@
 {
   "name": "preact-q-slider",
-  "version": "0.1.17",
+  "version": "0.1.18",
   "main": "./dist/preact-q-slider.js",
   "license": "MIT",
   "dependencies": {
     "classnames": "^2.2.5",
     "preact": "^8.2.7",
-    "preact-html-converter": "^0.3.2",
+    "preact-html-converter": "^0.3.3",
     "unistore": "^3.0.4"
   },
   "devDependencies": {

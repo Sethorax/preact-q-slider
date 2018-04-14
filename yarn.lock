@@ -5892,9 +5892,9 @@ postcss@^6.0.0, postcss@^6.0.1, postcss@^6.0.17:
     source-map "^0.6.1"
     supports-color "^5.3.0"
 
-preact-html-converter@^0.3.2:
-  version "0.3.2"
-  resolved "https://registry.yarnpkg.com/preact-html-converter/-/preact-html-converter-0.3.2.tgz#a973a8614f3a4608e597190e6712a1ffec6efdf5"
+preact-html-converter@^0.3.3:
+  version "0.3.3"
+  resolved "https://registry.yarnpkg.com/preact-html-converter/-/preact-html-converter-0.3.3.tgz#ab4f3ac01185b8d5e6d5570268ea5cb1b99bdb28"
   dependencies:
     parse5 "^3.0.2"
     preact "^8.2.7"
