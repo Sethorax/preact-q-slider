@@ -35,7 +35,11 @@ class Slider extends Preact.Component {
         this.isWaitingForCallback = true;
 
         this.setMaxSlideOffset();
-    }
+	}
+	
+	componentWillUnmount() {
+		this.stopAutoplay();
+	}
 
     componentDidUpdate(prevProps) {
         if (!prevProps.autoplay && this.props.autoplay) {
@@ -80,7 +84,7 @@ class Slider extends Preact.Component {
     stopAutoplay() {
         this.remainingAutoplayCycleDuration = (new Date()).getTime() - this.lastAuoplayCycleStart;
         clearTimeout(this.autoplayCycle);
-    }
+	}
 
     runAutoplayCycle(cycleDuration = 1000) {
         this.autoplayCycle = setTimeout(() => {
