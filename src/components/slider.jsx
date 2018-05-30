@@ -242,7 +242,11 @@ class Slider extends Preact.Component {
                     )}
 
                     {this.props.showPagination && this.props.slides.length > 1 && (
-                        <SliderPagination onPaginationItemClick={this.handlePaginationItemClick.bind(this)} slidesToShow={this.props.slidesToShow} />
+						<SliderPagination
+							onPaginationItemClick={this.handlePaginationItemClick.bind(this)}
+							slidesToShow={this.props.slidesToShow}
+							onPaginationItemRender={this.props.onPaginationItemRender}
+						/>
                     )}
                 </div>
             )
@@ -261,7 +265,8 @@ Slider.defaultProps = {
     autoplaySpeed: 1000,
     onSlideClick: () => {},
     canMove: () => {},
-    beforeChange: () => {}
+	beforeChange: () => {},
+	onPaginationItemRender: () => {}
 };
 
 

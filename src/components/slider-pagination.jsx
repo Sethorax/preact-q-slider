@@ -13,7 +13,12 @@ class SliderPagination extends Preact.Component {
             key,
             className: classNames('q-slider__pagination-item', { 'q-slider__pagination-item_is-current': isCurrent }),
             onClick: event => this.props.onPaginationItemClick(event, key)
-        };
+		};
+		
+		const modifiedProps = this.props.onPaginationItemRender(props, key, this.props.currentSlide);
+		if (typeof modifiedProps === 'object') {
+			Object.assign(props, modifiedProps);
+		}
 
         return this.props.paginationItem ? Preact.cloneElement(this.props.paginationItem, props) : h('div', props);
     }
