@@ -2,6 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const webpack = require('webpack');
 const nodeExternals = require('webpack-node-externals');
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 
 /**
  * WEBPACK CONFIG
@@ -9,22 +10,15 @@ const nodeExternals = require('webpack-node-externals');
 module.exports = env => {
     return {
         entry: {
-            'preact-q-slider': (env === 'production') ? './src/index.js' : './build/entry.js',
             styles: './src/styles.scss'
         },
         module: {
             rules: [
                 {
-                    test: /\.(js|jsx)$/,
-                    exclude: new RegExp(`node_modules`),
-                    use: {
-                        loader: 'babel-loader'
-                    }
-                }, {
                     test: /\.(css|sass|scss)$/,
                     exclude: /(bower_components)/,
                     use: [{
-                        loader: 'style-loader',
+                        loader: MiniCssExtractPlugin.loader,
                         options: {
                             sourceMap: (env === 'dev')
                         }
@@ -39,20 +33,23 @@ module.exports = env => {
                         options: {
                             sourceMap: (env === 'dev')
                         }
+                    }, {
+                        loader: 'postcss-loader'
                     }]
                 }
             ]
         },
+        plugins: [
+            new MiniCssExtractPlugin({
+                filename: "[name].css",
+                chunkFilename: "[id].css"
+            })
+        ],
         mode: (env === 'dev') ? 'development' : 'production',
-        plugins: [],
-        externals: (env === 'dev') ? {} : nodeExternals(),
-        resolve: {
-            extensions: ['.js', '.jsx']
-        },
         output: {
             filename: '[name].js',
             chunkFilename: '[name].js',
-            path: path.resolve('./dist')
+            path: path.resolve('./dist/styles')
         }
     };
 };

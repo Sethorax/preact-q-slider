@@ -1,0 +1,115 @@
+.q-slider {
+  margin-left: auto;
+  margin-right: auto;
+  width: 1200px; }
+
+.q-slider__slider {
+  padding: 0 50px;
+  position: relative;
+  width: 100%; }
+
+.q-slider__slide {
+  flex: none; }
+
+.q-slider__slide > * {
+  pointer-events: none; }
+
+.q-slider__slider_is-vertical img {
+  height: 100%;
+  width: auto; }
+
+.q-slider__slider_is-vertical {
+  height: 800px; }
+
+.q-slider__slider_is-vertical .imageslider__draggable-track {
+  height: 100%; }
+
+.q-slider__slider_is-vertical .imageslider__track {
+  display: block;
+  height: 100%; }
+
+.q-slider__draggable-track {
+  overflow: hidden; }
+
+.q-slider__track {
+  -moz-user-select: none;
+  -ms-user-select: none;
+  -webkit-user-select: none;
+  display: flex;
+  transition: -webkit-transform .3s ease;
+  transition: transform .3s ease;
+  transition: transform .3s ease,-webkit-transform .3s ease;
+  user-select: none; }
+
+.q-slider__track_no-transition {
+  transition: none; }
+
+.q-slider__track_fading-track {
+  position: relative; }
+
+.q-slider__track_fading-track .q-slider__slide {
+  width: 100%; }
+
+.q-slider__track_fading-track .q-slider__slide_is-current {
+  position: relative;
+  z-index: 5; }
+
+.q-slider__track_fading-track .q-slider__slide_is-next {
+  height: 100%;
+  left: 0;
+  position: absolute;
+  top: 0;
+  width: 100%; }
+
+.q-slider__arrow {
+  -webkit-transform: translateY(-50%);
+  cursor: pointer;
+  height: 36px;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 36px;
+  z-index: 5; }
+
+.q-slider__arrow:before {
+  border-color: #000;
+  border-left: 2px solid;
+  border-top: 2px solid;
+  content: "";
+  display: block;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  width: 100%; }
+
+.q-slider__arrow_prev {
+  left: 0; }
+
+.q-slider__arrow_prev:before {
+  -webkit-transform: rotate(-45deg);
+  left: 8px;
+  transform: rotate(-45deg); }
+
+.q-slider__arrow_next {
+  right: 0; }
+
+.q-slider__arrow_next:before {
+  -webkit-transform: rotate(135deg);
+  right: 8px;
+  transform: rotate(135deg); }
+
+.q-slider__pagination {
+  display: flex; }
+
+.q-slider__pagination-item {
+  background: #000;
+  border-radius: 100%;
+  height: 12px;
+  margin: 0 3px;
+  opacity: .5;
+  transition: opacity .2s ease;
+  width: 12px; }
+
+.q-slider__pagination-item_is-current {
+  opacity: 1; }
+
