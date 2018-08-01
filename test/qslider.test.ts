@@ -1,7 +1,8 @@
 import { createQSlider, resetQSlider, setQSliderProps } from './components/qslider';
-import { resetStore } from './mocks/store-mock';
+import { resetStore, getStore } from './mocks/store-mock';
 import { matchMediaMock, matchMediaAddListenerMock, resetMachMediaMocks } from './mocks/match-media-mock';
 import { Slider } from '../src/components/slider';
+import { runSequential } from './utils';
 
 (global as any).matchMedia = matchMediaMock;
 

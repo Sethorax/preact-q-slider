@@ -167,7 +167,7 @@
                 });
             }
         };
-        SlideTrackComponent.prototype.componentDidUpdate = function () {
+        SlideTrackComponent.prototype.componentDidUpdate = function (prevProps) {
             var _this = this;
             if (this.props.fade) {
                 if (!this.props.isFading && this.props.currentSlideIndex !== this.state.currentSlideIndex) {
@@ -190,6 +190,11 @@
                         });
                     }
                 }
+            }
+            if (this.props.currentSlideIndex !== prevProps.currentSlideIndex) {
+                setTimeout(function () {
+                    _this.props.afterChange(_this.props.currentSlideIndex, prevProps.currentSlideIndex);
+                }, this.props.fade ? this.props.fadeDuration : 300);
             }
         };
         SlideTrackComponent.prototype.shouldComponentUpdate = function (nextProps) {
@@ -390,10 +395,7 @@
                 return false;
             return true;
         };
-        SliderComponent.prototype.gotoNext = function () {
-            var _this = this;
-            if (!this.canMove())
-                return;
+        SliderComponent.prototype.calculateSlidesToAdvance = function () {
             var slidesToAdvance;
             if (this.props.currentSlideIndex + this.props.slidesToScroll <= this.maxSlideOffset) {
                 slidesToAdvance = this.props.slidesToScroll;
@@ -404,29 +406,46 @@
             else {
                 slidesToAdvance = this.maxSlideOffset - this.props.currentSlideIndex;
             }
-            this.isWaitingForCallback = false;
-            Promise.resolve(this.props.beforeChange()).then(function () {
-                _this.props.setCurrentSlideIndex(_this.props.currentSlideIndex + slidesToAdvance);
-                _this.isWaitingForCallback = true;
-            });
+            return slidesToAdvance;
         };
-        SliderComponent.prototype.gotoPrev = function () {
+        SliderComponent.prototype.gotoNext = function (slidesToAdvance) {
             var _this = this;
             if (!this.canMove())
                 return;
-            var slidesToGoBack;
+            if (!slidesToAdvance) {
+                slidesToAdvance = this.calculateSlidesToAdvance();
+            }
+            var nextSlideIndex = this.props.currentSlideIndex + slidesToAdvance;
+            this.isWaitingForCallback = false;
+            Promise.resolve(this.props.beforeChange(this.props.currentSlideIndex, nextSlideIndex)).then(function () {
+                _this.props.setCurrentSlideIndex(nextSlideIndex);
+                _this.isWaitingForCallback = true;
+            });
+        };
+        SliderComponent.prototype.calculateSlidesToRegress = function () {
+            var slidesToRegress;
             if (this.props.currentSlideIndex - this.props.slidesToScroll >= 0) {
-                slidesToGoBack = this.props.slidesToScroll;
+                slidesToRegress = this.props.slidesToScroll;
             }
             else if (this.props.rewindOnEnd && this.props.currentSlideIndex === 0) {
-                slidesToGoBack = this.maxSlideOffset * -1;
+                slidesToRegress = this.maxSlideOffset * -1;
             }
             else {
-                slidesToGoBack = this.props.currentSlideIndex;
+                slidesToRegress = this.props.currentSlideIndex;
             }
+            return slidesToRegress;
+        };
+        SliderComponent.prototype.gotoPrev = function (slidesToRegress) {
+            var _this = this;
+            if (!this.canMove())
+                return;
+            if (!slidesToRegress) {
+                slidesToRegress = this.calculateSlidesToRegress();
+            }
+            var nextSlideIndex = this.props.currentSlideIndex - slidesToRegress;
             this.isWaitingForCallback = false;
-            Promise.resolve(this.props.beforeChange()).then(function () {
-                _this.props.setCurrentSlideIndex(_this.props.currentSlideIndex - slidesToGoBack);
+            Promise.resolve(this.props.beforeChange(this.props.currentSlideIndex, nextSlideIndex)).then(function () {
+                _this.props.setCurrentSlideIndex(nextSlideIndex);
                 _this.isWaitingForCallback = true;
             });
         };
@@ -435,22 +454,22 @@
             if (returnIndex === void 0) { returnIndex = false; }
             if (!this.canMove())
                 return;
-            var nextSlide;
+            var nextSlideIndex;
             if (slideIndex < 0) {
-                nextSlide = this.props.fade ? this.maxSlideOffset : 0;
+                nextSlideIndex = this.props.fade ? this.maxSlideOffset : 0;
             }
             else if (slideIndex > this.maxSlideOffset) {
-                nextSlide = this.props.fade ? 0 : this.maxSlideOffset;
+                nextSlideIndex = this.props.fade ? 0 : this.maxSlideOffset;
             }
             else {
-                nextSlide = slideIndex;
+                nextSlideIndex = slideIndex;
             }
             if (returnIndex) {
-                return nextSlide;
+                return nextSlideIndex;
             }
             this.isWaitingForCallback = false;
-            Promise.resolve(this.props.beforeChange()).then(function () {
-                _this.props.setCurrentSlideIndex(nextSlide);
+            Promise.resolve(this.props.beforeChange(this.props.currentSlideIndex, nextSlideIndex)).then(function () {
+                _this.props.setCurrentSlideIndex(nextSlideIndex);
                 _this.isWaitingForCallback = true;
             });
         };
@@ -458,12 +477,22 @@
             return this.slider.getBoundingClientRect().width;
         };
         SliderComponent.prototype.handlePrevClick = function () {
-            if ((this.props.slides.length >= this.props.slidesToShow && this.props.rewindOnEnd) || this.canGoPrev())
-                this.gotoPrev();
+            var _this = this;
+            var willChange = (this.props.slides.length >= this.props.slidesToShow && this.props.rewindOnEnd) || this.canGoPrev();
+            var slidesToRegress = this.calculateSlidesToRegress();
+            Promise.resolve(this.props.onPrevClick(willChange, this.props.currentSlideIndex, this.props.currentSlideIndex - slidesToRegress)).then(function () {
+                if (willChange)
+                    _this.gotoPrev(slidesToRegress);
+            });
         };
         SliderComponent.prototype.handleNextClick = function () {
-            if ((this.props.slides.length >= this.props.slidesToShow && this.props.rewindOnEnd) || this.canGoNext())
-                this.gotoNext();
+            var _this = this;
+            var willChange = (this.props.slides.length >= this.props.slidesToShow && this.props.rewindOnEnd) || this.canGoNext();
+            var slidesToAdvance = this.calculateSlidesToAdvance();
+            Promise.resolve(this.props.onNextClick(willChange, this.props.currentSlideIndex, this.props.currentSlideIndex + slidesToAdvance)).then(function () {
+                if (willChange)
+                    _this.gotoNext();
+            });
         };
         SliderComponent.prototype.handlePaginationItemClick = function (event, key) {
             if (this.props.slides.length < this.props.slidesToShow)
@@ -476,7 +505,7 @@
         SliderComponent.prototype.render = function () {
             return (this.props.slides.length > 0 && (preact.h("div", { ref: this.handleSliderRef, className: classNames('q-slider__slider', { 'q-slider__slider_is-vertical': this.props.vertical, 'q-slider__slider_no-sliding': this.props.slides.length <= this.props.slidesToShow }) },
                 preact.h(DraggableTrack, { slidesToShow: this.props.slidesToShow, vertical: this.props.vertical, gotoSlide: this.gotoSlide, getSliderWidth: this.getSliderWidth },
-                    preact.h(SlideTrack, { fade: this.props.fade, fadeDuration: this.props.fadeDuration, vertical: this.props.vertical, slidesToShow: this.props.slidesToShow, onSlideClick: this.props.onSlideClick })),
+                    preact.h(SlideTrack, { fade: this.props.fade, fadeDuration: this.props.fadeDuration, vertical: this.props.vertical, slidesToShow: this.props.slidesToShow, onSlideClick: this.props.onSlideClick, afterChange: this.props.afterChange })),
                 this.props.showArrows && this.props.slides.length > 1 && (preact.h(SliderNavigation, { onNextArrowClick: this.handleNextClick, onPrevArrowClick: this.handlePrevClick, nextArrow: this.props.nextArrow, prevArrow: this.props.prevArrow })),
                 this.props.showPagination && this.props.slides.length > 1 && (preact.h(SliderPagination, { slidesToShow: this.props.slidesToShow, onPaginationItemClick: this.handlePaginationItemClick, onPaginationItemRender: this.props.onPaginationItemRender })))));
         };
@@ -563,7 +592,10 @@
             onSlideClick: function () { },
             canMove: function () { return true; },
             beforeChange: function () { },
-            onPaginationItemRender: function (props) { return props; }
+            afterChange: function () { },
+            onPaginationItemRender: function (props) { return props; },
+            onNextClick: function () { },
+            onPrevClick: function () { }
         };
         return QSlider;
     }(preact.Component));

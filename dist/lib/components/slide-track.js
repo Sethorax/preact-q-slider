@@ -40,7 +40,7 @@ var SlideTrackComponent = /** @class */ (function (_super) {
             });
         }
     };
-    SlideTrackComponent.prototype.componentDidUpdate = function () {
+    SlideTrackComponent.prototype.componentDidUpdate = function (prevProps) {
         var _this = this;
         if (this.props.fade) {
             if (!this.props.isFading && this.props.currentSlideIndex !== this.state.currentSlideIndex) {
@@ -63,6 +63,11 @@ var SlideTrackComponent = /** @class */ (function (_super) {
                     });
                 }
             }
+        }
+        if (this.props.currentSlideIndex !== prevProps.currentSlideIndex) {
+            setTimeout(function () {
+                _this.props.afterChange(_this.props.currentSlideIndex, prevProps.currentSlideIndex);
+            }, this.props.fade ? this.props.fadeDuration : 300);
         }
     };
     SlideTrackComponent.prototype.shouldComponentUpdate = function (nextProps) {

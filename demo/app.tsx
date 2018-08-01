@@ -1,5 +1,5 @@
 import { h, render } from "preact";
-import { QSlider, QSliderProps } from "../dist/preact-q-slider.es5";
+import { QSlider, QSliderProps, QSliderBreakpoints } from "../src/preact-q-slider";
 import './app.scss';
 
 const breakpoints: QSliderBreakpoints = {
@@ -9,19 +9,15 @@ const breakpoints: QSliderBreakpoints = {
 }
 
 const props: QSliderProps = {
-    breakpoints,
-    slidesHTML: `
-    <img src="//placehold.it/100x50" alt=""/>
-    <img src="//placehold.it/100x50" alt=""/>
-    <img src="//placehold.it/100x50" alt=""/>
-    <img src="//placehold.it/100x50" alt=""/>
-    <img src="//placehold.it/100x50" alt=""/>
-    <img src="//placehold.it/100x50" alt=""/>
-    `
+    slidesHTML: '<div>1</div><div class="target">2</div><div>3</div>',
+    slidesToShow: 2,
+    slidesToScroll: 1,
+    showArrows: true,
+    rewindOnEnd: false
 }
 
 render(
-<QSlider >
+<QSlider {...props}>
    
 </QSlider>
 , document.getElementById("root"));

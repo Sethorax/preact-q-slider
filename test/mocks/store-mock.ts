@@ -4,7 +4,7 @@ import { StoreState } from '../../src/store/index';
 
 let instance: Store<StoreState> = null;
 
-const getStore = () => {
+export const getStore = () => {
     if (instance === null) {
         instance = storeDependency.getStore();
     }

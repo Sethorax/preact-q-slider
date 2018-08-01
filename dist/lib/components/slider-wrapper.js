@@ -83,7 +83,10 @@ var QSlider = /** @class */ (function (_super) {
         onSlideClick: function () { },
         canMove: function () { return true; },
         beforeChange: function () { },
-        onPaginationItemRender: function (props) { return props; }
+        afterChange: function () { },
+        onPaginationItemRender: function (props) { return props; },
+        onNextClick: function () { },
+        onPrevClick: function () { }
     };
     return QSlider;
 }(preact_1.Component));

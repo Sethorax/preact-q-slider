@@ -7,6 +7,7 @@ import { DraggableTrack } from '../src/components/draggable-track';
 import { SlideTrack } from '../src/components/slide-track';
 import { SliderNavigation } from '../src/components/slider-navigation';
 import { SliderPagination } from '../src/components/slider-pagination';
+import { runSequential } from './utils';
 
 describe('Slider', () => {
     beforeEach(() => {
@@ -285,6 +286,126 @@ describe('Slider', () => {
                 expect(getStoreMock().getState().currentSlideIndex).toBe(1);
                 done();
             }, 900);
+        });
+    });
+
+    describe('callbacks', async () => {
+        it('should trigger callback on slide click', async () => {
+            const evt = new MouseEvent('click', {
+                clientX: 0,
+                clientY: 0
+            });
+
+            const cb = jest.fn((event, index) => {
+                expect(event).toEqual(evt);
+                expect(index).toBe(1);
+            })
+
+            const qSlider = await createSlider({
+                slidesHTML: '<div>1</div><div class="target">2</div><div>3</div>',
+                onSlideClick: cb
+            });
+
+            qSlider.find('.q-slider__slide').at(1).simulate('click', evt);
+
+            expect(cb).toBeCalled();
+            expect(cb.mock.calls.length).toBe(1);
+        });
+
+        it('should trigger callback on next click', async (done) => {
+            let i = 0;
+            const cb = jest.fn((willChange, currentSlideIndex, nextSlideIndex) => {
+                if (i < 2) {
+                    expect(willChange).toBeTruthy();
+                    expect(currentSlideIndex).toBe(i);
+                    expect(nextSlideIndex).toBe(i + 1);
+                } else {
+                    expect(willChange).toBeFalsy();
+                    expect(currentSlideIndex).toBe(2);
+                    expect(nextSlideIndex).toBe(2);
+                }
+
+                i++;
+            });
+    
+            const qSlider = await createSlider({
+                slidesHTML: '<div>1</div><div class="target">2</div><div>3</div>',
+                slidesToShow: 1,
+                slidesToScroll: 1,
+                onNextClick: cb,
+                arrows: true,
+                rewindOnEnd: false
+            });
+    
+            runSequential([
+                () => qSlider.find('.q-slider__arrow_next').simulate('click'),
+                () => qSlider.find('.q-slider__arrow_next').simulate('click'),
+                () => qSlider.find('.q-slider__arrow_next').simulate('click'),
+                () => qSlider.find('.q-slider__arrow_next').simulate('click'),
+                () => qSlider.find('.q-slider__arrow_next').simulate('click'),
+            ], 100, () => {
+                expect(cb).toBeCalled();
+                expect(cb.mock.calls.length).toBe(5);
+                done();
+            });
+        });
+
+        it('should trigger callback on prev click', async (done) => {
+            let i = 0;
+
+            const cb = jest.fn((willChange, currentSlideIndex, nextSlideIndex) => {
+                expect(willChange).toBeFalsy();
+                expect(currentSlideIndex).toBe(0);
+                expect(nextSlideIndex).toBe(0);
+                i++;
+            });
+    
+            const qSlider = await createSlider({
+                slidesHTML: '<div>1</div><div class="target">2</div><div>3</div>',
+                slidesToShow: 1,
+                slidesToScroll: 1,
+                onPrevClick: cb,
+                showArrows: true,
+                rewindOnEnd: false
+            });
+
+            runSequential([
+                () => qSlider.find('.q-slider__arrow_prev').simulate('click'),
+                () => qSlider.find('.q-slider__arrow_prev').simulate('click'),
+                () => qSlider.find('.q-slider__arrow_prev').simulate('click'),
+                () => qSlider.find('.q-slider__arrow_prev').simulate('click'),
+                () => qSlider.find('.q-slider__arrow_prev').simulate('click'),
+            ], 100, () => {
+                expect(cb).toBeCalled();
+                expect(cb.mock.calls.length).toBe(5);
+                done();
+            });
+        });
+
+        it('should trigger callback on before change', async (done) => {
+            const cb = jest.fn((currentSlideIndex, nextSlideIndex) => {
+                expect(currentSlideIndex).toBe(0);
+                expect(nextSlideIndex).toBe(1);
+            });
+    
+            const qSlider = await createSlider({
+                slidesHTML: '<div>1</div><div class="target">2</div><div>3</div>',
+                slidesToShow: 1,
+                slidesToScroll: 1,
+                beforeChange: cb,
+                showArrows: true,
+                rewindOnEnd: false
+            });
+    
+            runSequential([
+                () => qSlider.find('.q-slider__arrow_next').simulate('click'),
+            ], 0, () => {
+                setTimeout(() => {
+                    expect(cb).toBeCalled();
+                    expect(cb.mock.calls.length).toBe(1);
+                    done();
+                }, 100);
+            });
         });
     });
 });

@@ -1,6 +1,6 @@
 {
   "name": "preact-q-slider",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "main": "dist/preact-q-slider.umd.js",
   "module": "dist/preact-q-slider.es5.js",
   "types": "dist/types/preact-q-slider.d.ts",
@@ -43,7 +43,7 @@
   },
   "scripts": {
     "prebuild": "rimraf dist",
-    "watch": "webpack-dev-server --content-base demo --env=dev",
+    "watch": "webpack-dev-server --content-base demo --env=dev --config webpack.config.dev.js",
     "build": "npm run build:main && npm run build:styles",
     "build:main": "tsc --module commonjs && rollup -c rollup.config.ts",
     "build:styles": "webpack -d && cp src/styles.scss dist/styles && rimraf dist/styles/styles.js",

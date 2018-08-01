@@ -8,6 +8,7 @@ export interface SlideTrackProps extends SlideTrackConfigProps {
     fade: boolean;
     fadeDuration: number;
     vertical?: boolean;
+    afterChange: (currentSlideIndex: number, previousSlideIndex: number) => void;
 }
 interface SlideTrackState {
     currentSlide: VNode;

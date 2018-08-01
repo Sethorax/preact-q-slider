@@ -15,6 +15,7 @@ export interface SlideTrackProps extends SlideTrackConfigProps {
     fade: boolean;
     fadeDuration: number;
     vertical?: boolean;
+    afterChange: (currentSlideIndex: number, previousSlideIndex: number) => void;
 }
 
 interface SlideTrackState {
@@ -51,7 +52,7 @@ class SlideTrackComponent extends Component<SlideTrackProps & StoreProps & Store
 
     private onClickStartX: number = 0;
     private onClickStartY: number = 0;
-    private fadeTimeout: NodeJS.Timer = null;
+    private fadeTimeout: number = null;
     private activeFadeSlide: number = 0;
 
     public constructor() {
@@ -69,7 +70,7 @@ class SlideTrackComponent extends Component<SlideTrackProps & StoreProps & Store
         }
     }
 
-    public componentDidUpdate() {
+    public componentDidUpdate(prevProps: SlideTrackProps & StoreProps & StoreActions) {
         if (this.props.fade) {
             if (!this.props.isFading && this.props.currentSlideIndex !== this.state.currentSlideIndex) {
                 if (this.state.nextSlideIndex === this.props.currentSlideIndex) {
@@ -92,6 +93,12 @@ class SlideTrackComponent extends Component<SlideTrackProps & StoreProps & Store
                     });
                 }
             }
+        }
+
+        if (this.props.currentSlideIndex !== prevProps.currentSlideIndex) {
+            setTimeout(() => {
+                this.props.afterChange(this.props.currentSlideIndex, prevProps.currentSlideIndex);
+            }, this.props.fade ? this.props.fadeDuration : 300);
         }
     }
 
@@ -144,7 +151,7 @@ class SlideTrackComponent extends Component<SlideTrackProps & StoreProps & Store
         return (
             <div className={classNames("q-slider__track q-slider__track_fading-track", { "q-slider__track_fading-track_is-fading": this.props.isFading })}>
                 <div
-                className={classNames("q-slider__slide q-slider__slide_is-current", { "q-slider__slide_is-active": this.activeFadeSlide === 0 })}
+                    className={classNames("q-slider__slide q-slider__slide_is-current", { "q-slider__slide_is-active": this.activeFadeSlide === 0 })}
                     style={{
                         zIndex: this.activeFadeSlide === 0 ? 2 : 1,
                         opacity: this.activeFadeSlide === 0 && this.props.isFading ? 0 : 1,

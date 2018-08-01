@@ -56,7 +56,10 @@ export class QSlider extends Component<QSliderProps, QSliderState> {
         onSlideClick: () => {},
         canMove: () => true,
         beforeChange: () => {},
-        onPaginationItemRender: (props: PaginationItemProps) => props
+        afterChange: () => {},
+        onPaginationItemRender: (props: PaginationItemProps) => props,
+        onNextClick: () => {},
+        onPrevClick: () => {}
     }
 
     private watchBreakpoints() {

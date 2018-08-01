@@ -16,7 +16,11 @@ export interface SliderConfigProps extends ChildConfigProps {
     showArrows?: boolean;
     showPagination?: boolean;
     canMove?: () => boolean;
-    beforeChange?: () => Promise<void> | void;
+    beforeChange?: (currentSlideIndex: number, nextSlideIndex: number) => Promise<void> | void;
+    afterChange?: (currentSlideIndex: number, previousSlideIndex: number) => Promise<void> | void;
+    onNextClick?: (willChange: boolean, currentSlideIndex: number, nextSlideIndex: number) => Promise<void> | void;
+    onPrevClick?: (willChange: boolean, currentSlideIndex: number, nextSlideIndex: number) => Promise<void> | void;
+    onFirstSlideRender?: () => void;
 }
 export interface SliderProps extends SliderConfigProps {
 }
