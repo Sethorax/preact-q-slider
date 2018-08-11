@@ -119,7 +119,7 @@ var SliderNavigation = /** @class */ (function (_super) {
 
 var getClientPosFromTouchOrMouseEvent = function (event, getY) {
     if (getY === void 0) { getY = false; }
-    if (event instanceof TouchEvent) {
+    if (isTouchEvent(event)) {
         return getY ? event.touches[0].clientY : event.touches[0].clientX;
     }
     else {
@@ -135,6 +135,9 @@ var getNumericKeys = function (source) {
         }
     });
     return validKeys;
+};
+var isTouchEvent = function (event) {
+    return event.touches !== undefined && event.touches.length > 0;
 };
 
 var SlideTrackComponent = /** @class */ (function (_super) {
