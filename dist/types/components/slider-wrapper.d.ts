@@ -12,6 +12,7 @@ interface QSliderState {
     currentProps: QSliderProps;
 }
 export declare class QSlider extends Component<QSliderProps, QSliderState> {
+    private store;
     constructor(props: QSliderProps);
     componentDidMount(): void;
     static defaultProps: Partial<QSliderProps>;

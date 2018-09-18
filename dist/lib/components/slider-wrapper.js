@@ -23,11 +23,11 @@ var preact_2 = require("unistore/preact");
 var slider_1 = require("./slider");
 var index_1 = require("../utils/index");
 var store_1 = require("../store");
-var store = store_1.getStore();
 var QSlider = /** @class */ (function (_super) {
     __extends(QSlider, _super);
     function QSlider(props) {
         var _this = _super.call(this, props) || this;
+        _this.store = store_1.getStore();
         var initialProps = __assign({}, props, { slidesToScroll: props.fade ? 1 : props.slidesToScroll, slidesToShow: props.fade ? 1 : props.slidesToShow });
         _this.state = {
             ready: false,
@@ -44,7 +44,7 @@ var QSlider = /** @class */ (function (_super) {
         if (this.props.breakpoints) {
             var onMediaQueryChange_1 = function (mediaQuery, props) {
                 if (mediaQuery.matches) {
-                    var newProps = (props !== null) ? props : _this.state.initialProps;
+                    var newProps = props !== null ? props : _this.state.initialProps;
                     _this.setState({
                         currentProps: __assign({}, _this.state.currentProps, newProps)
                     });
@@ -66,8 +66,8 @@ var QSlider = /** @class */ (function (_super) {
         this.setState({ ready: true });
     };
     QSlider.prototype.render = function () {
-        return this.state.ready && (preact_1.h(preact_2.Provider, { store: store },
-            preact_1.h(slider_1.Slider, __assign({}, this.state.currentProps))));
+        return (this.state.ready && (preact_1.h(preact_2.Provider, { store: this.store },
+            preact_1.h(slider_1.Slider, __assign({}, this.state.currentProps)))));
     };
     QSlider.defaultProps = {
         slidesToShow: 3,
