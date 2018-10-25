@@ -86,7 +86,8 @@ var QSlider = /** @class */ (function (_super) {
         afterChange: function () { },
         onPaginationItemRender: function (props) { return props; },
         onNextClick: function () { },
-        onPrevClick: function () { }
+        onPrevClick: function () { },
+        onInit: function () { }
     };
     return QSlider;
 }(preact_1.Component));

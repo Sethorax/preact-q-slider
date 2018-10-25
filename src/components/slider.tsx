@@ -1,9 +1,9 @@
-import { h , Component, ComponentConstructor, VNode } from "preact";
+import { h, Component, ComponentConstructor, VNode } from "preact";
 import classNames from "classnames";
 import { Store } from "unistore";
 import { PreactHTMLConverter } from "preact-html-converter";
 import { StoreState } from "../store";
-import { setSlides,setCurrentSlideIndex } from "../actions";
+import { setSlides, setCurrentSlideIndex } from "../actions";
 import { connectClass } from "../utils/preact-utils";
 import { MouseTouchEvent } from "../utils/index";
 import { SliderPagination, SliderPaginationConfigProps } from "./slider-pagination";
@@ -11,7 +11,9 @@ import { SliderNavigation, SliderNavigationConfigProps } from "./slider-navigati
 import { SlideTrack, SlideTrackConfigProps } from "./slide-track";
 import { DraggableTrack } from "./draggable-track";
 
-type ChildConfigProps = SliderPaginationConfigProps & SliderNavigationConfigProps & SlideTrackConfigProps;
+type ChildConfigProps = SliderPaginationConfigProps &
+    SliderNavigationConfigProps &
+    SlideTrackConfigProps;
 
 export interface SliderConfigProps extends ChildConfigProps {
     slidesToShow?: number;
@@ -28,15 +30,24 @@ export interface SliderConfigProps extends ChildConfigProps {
     canMove?: () => boolean;
     beforeChange?: (currentSlideIndex: number, nextSlideIndex: number) => Promise<void> | void;
     afterChange?: (currentSlideIndex: number, previousSlideIndex: number) => Promise<void> | void;
-    onNextClick?: (willChange: boolean, currentSlideIndex: number, nextSlideIndex: number) => Promise<void> | void;
-    onPrevClick?: (willChange: boolean, currentSlideIndex: number, nextSlideIndex: number) => Promise<void> | void;
-    onFirstSlideRender?: () => void;
+    onNextClick?: (
+        willChange: boolean,
+        currentSlideIndex: number,
+        nextSlideIndex: number
+    ) => Promise<void> | void;
+    onPrevClick?: (
+        willChange: boolean,
+        currentSlideIndex: number,
+        nextSlideIndex: number
+    ) => Promise<void> | void;
+    onInit?: () => void;
 }
 
-export interface SliderProps extends SliderConfigProps {};
+export interface SliderProps extends SliderConfigProps {}
 
 interface SliderState {
     renderChildren: boolean;
+    didInit: boolean;
 }
 
 interface StoreProps {
@@ -51,9 +62,10 @@ interface StoreActions {
 }
 
 class SliderComponent extends Component<SliderProps & StoreProps & StoreActions, SliderState> {
-    public state: {
-        renderChildren: false
-    }
+    public state: SliderState = {
+        renderChildren: false,
+        didInit: false
+    };
 
     private slider: HTMLElement = null;
     private maxSlideOffset: number = null;
@@ -108,22 +120,31 @@ class SliderComponent extends Component<SliderProps & StoreProps & StoreActions,
             this.stopAutoplay();
         }
 
+        if (!this.state.didInit && this.props.slides.length > 0) {
+            this.props.onInit();
+        }
+
         this.setMaxSlideOffset();
     }
 
     private startAutoplay() {
-        const cycleDuration = this.remainingAutoplayCycleDuration > 0 && this.remainingAutoplayCycleDuration < this.props.autoplaySpeed ? this.remainingAutoplayCycleDuration : this.props.autoplaySpeed;
+        const cycleDuration =
+            this.remainingAutoplayCycleDuration > 0 &&
+            this.remainingAutoplayCycleDuration < this.props.autoplaySpeed
+                ? this.remainingAutoplayCycleDuration
+                : this.props.autoplaySpeed;
         this.runAutoplayCycle(cycleDuration);
     }
 
     private stopAutoplay() {
-        this.remainingAutoplayCycleDuration = (new Date()).getTime() - this.remainingAutoplayCycleDuration;
+        this.remainingAutoplayCycleDuration =
+            new Date().getTime() - this.remainingAutoplayCycleDuration;
         clearTimeout(this.autoplayCycle);
     }
 
     private runAutoplayCycle(cycleDuration: number) {
         this.autoplayCycle = setTimeout(() => {
-            this.lastAutoplayCycleStart = (new Date()).getTime();
+            this.lastAutoplayCycleStart = new Date().getTime();
             this.runAutoplayCycle(cycleDuration);
             this.handleNextClick();
         }, cycleDuration);
@@ -173,11 +194,13 @@ class SliderComponent extends Component<SliderProps & StoreProps & StoreActions,
         const nextSlideIndex = this.props.currentSlideIndex + slidesToAdvance;
         this.isWaitingForCallback = false;
 
-        Promise.resolve(this.props.beforeChange(this.props.currentSlideIndex, nextSlideIndex)).then(() => {
-            this.props.setCurrentSlideIndex(nextSlideIndex);
+        Promise.resolve(this.props.beforeChange(this.props.currentSlideIndex, nextSlideIndex)).then(
+            () => {
+                this.props.setCurrentSlideIndex(nextSlideIndex);
 
-            this.isWaitingForCallback = true;
-        });
+                this.isWaitingForCallback = true;
+            }
+        );
     }
 
     private calculateSlidesToRegress() {
@@ -203,14 +226,16 @@ class SliderComponent extends Component<SliderProps & StoreProps & StoreActions,
 
         const nextSlideIndex = this.props.currentSlideIndex - slidesToRegress;
         this.isWaitingForCallback = false;
-        Promise.resolve(this.props.beforeChange(this.props.currentSlideIndex, nextSlideIndex)).then(() => {
-            this.props.setCurrentSlideIndex(nextSlideIndex);
+        Promise.resolve(this.props.beforeChange(this.props.currentSlideIndex, nextSlideIndex)).then(
+            () => {
+                this.props.setCurrentSlideIndex(nextSlideIndex);
 
-            this.isWaitingForCallback = true;
-        });
+                this.isWaitingForCallback = true;
+            }
+        );
     }
 
-    public gotoSlide(slideIndex: number, returnIndex = false): number|void {
+    public gotoSlide(slideIndex: number, returnIndex = false): number | void {
         if (!this.canMove()) return;
 
         let nextSlideIndex: number;
@@ -228,11 +253,13 @@ class SliderComponent extends Component<SliderProps & StoreProps & StoreActions,
         }
 
         this.isWaitingForCallback = false;
-        Promise.resolve(this.props.beforeChange(this.props.currentSlideIndex, nextSlideIndex)).then(() => {
-            this.props.setCurrentSlideIndex(nextSlideIndex);
+        Promise.resolve(this.props.beforeChange(this.props.currentSlideIndex, nextSlideIndex)).then(
+            () => {
+                this.props.setCurrentSlideIndex(nextSlideIndex);
 
-            this.isWaitingForCallback = true;
-        });
+                this.isWaitingForCallback = true;
+            }
+        );
     }
 
     public getSliderWidth() {
@@ -240,19 +267,35 @@ class SliderComponent extends Component<SliderProps & StoreProps & StoreActions,
     }
 
     private handlePrevClick() {
-        const willChange = (this.props.slides.length >= this.props.slidesToShow && this.props.rewindOnEnd) || this.canGoPrev();
+        const willChange =
+            (this.props.slides.length >= this.props.slidesToShow && this.props.rewindOnEnd) ||
+            this.canGoPrev();
         const slidesToRegress = this.calculateSlidesToRegress();
 
-        Promise.resolve(this.props.onPrevClick(willChange, this.props.currentSlideIndex, this.props.currentSlideIndex - slidesToRegress)).then(() => {
+        Promise.resolve(
+            this.props.onPrevClick(
+                willChange,
+                this.props.currentSlideIndex,
+                this.props.currentSlideIndex - slidesToRegress
+            )
+        ).then(() => {
             if (willChange) this.gotoPrev(slidesToRegress);
         });
     }
 
     private handleNextClick() {
-        const willChange = (this.props.slides.length >= this.props.slidesToShow && this.props.rewindOnEnd) || this.canGoNext();
+        const willChange =
+            (this.props.slides.length >= this.props.slidesToShow && this.props.rewindOnEnd) ||
+            this.canGoNext();
         const slidesToAdvance = this.calculateSlidesToAdvance();
 
-        Promise.resolve(this.props.onNextClick(willChange, this.props.currentSlideIndex, this.props.currentSlideIndex + slidesToAdvance)).then(() => {
+        Promise.resolve(
+            this.props.onNextClick(
+                willChange,
+                this.props.currentSlideIndex,
+                this.props.currentSlideIndex + slidesToAdvance
+            )
+        ).then(() => {
             if (willChange) this.gotoNext();
         });
     }
@@ -270,7 +313,14 @@ class SliderComponent extends Component<SliderProps & StoreProps & StoreActions,
     public render() {
         return (
             this.props.slides.length > 0 && (
-                <div ref={this.handleSliderRef} className={classNames('q-slider__slider', { 'q-slider__slider_is-vertical': this.props.vertical, 'q-slider__slider_no-sliding': this.props.slides.length <= this.props.slidesToShow })}>
+                <div
+                    ref={this.handleSliderRef}
+                    className={classNames("q-slider__slider", {
+                        "q-slider__slider_is-vertical": this.props.vertical,
+                        "q-slider__slider_no-sliding":
+                            this.props.slides.length <= this.props.slidesToShow
+                    })}
+                >
                     <DraggableTrack
                         slidesToShow={this.props.slidesToShow}
                         vertical={this.props.vertical}
@@ -287,22 +337,24 @@ class SliderComponent extends Component<SliderProps & StoreProps & StoreActions,
                         />
                     </DraggableTrack>
 
-                    {this.props.showArrows && this.props.slides.length > 1 && (
-                        <SliderNavigation
-                            onNextArrowClick={this.handleNextClick}
-                            onPrevArrowClick={this.handlePrevClick}
-                            nextArrow={this.props.nextArrow}
-                            prevArrow={this.props.prevArrow}
-                        />
-                    )}
+                    {this.props.showArrows &&
+                        this.props.slides.length > 1 && (
+                            <SliderNavigation
+                                onNextArrowClick={this.handleNextClick}
+                                onPrevArrowClick={this.handlePrevClick}
+                                nextArrow={this.props.nextArrow}
+                                prevArrow={this.props.prevArrow}
+                            />
+                        )}
 
-                    {this.props.showPagination && this.props.slides.length > 1 && (
-                        <SliderPagination
-                            slidesToShow={this.props.slidesToShow}
-                            onPaginationItemClick={this.handlePaginationItemClick}
-                            onPaginationItemRender={this.props.onPaginationItemRender}
-                        />
-                    )}
+                    {this.props.showPagination &&
+                        this.props.slides.length > 1 && (
+                            <SliderPagination
+                                slidesToShow={this.props.slidesToShow}
+                                onPaginationItemClick={this.handlePaginationItemClick}
+                                onPaginationItemRender={this.props.onPaginationItemRender}
+                            />
+                        )}
                 </div>
             )
         );
@@ -320,4 +372,7 @@ const mapActionsToProps = (store: Store<StoreState>): StoreActions => ({
     setCurrentSlideIndex
 });
 
-export const Slider = connectClass<SliderProps, SliderState, StoreState, StoreProps, StoreActions>(mapStateToProps, mapActionsToProps)(SliderComponent);
+export const Slider = connectClass<SliderProps, SliderState, StoreState, StoreProps, StoreActions>(
+    mapStateToProps,
+    mapActionsToProps
+)(SliderComponent);

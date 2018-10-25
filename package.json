@@ -1,6 +1,6 @@
 {
   "name": "preact-q-slider",
-  "version": "0.3.3",
+  "version": "0.4.0",
   "main": "dist/preact-q-slider.umd.js",
   "module": "dist/preact-q-slider.es5.js",
   "types": "dist/types/preact-q-slider.d.ts",

@@ -317,6 +317,10 @@
         __extends(SliderComponent, _super);
         function SliderComponent() {
             var _this = _super.call(this) || this;
+            _this.state = {
+                renderChildren: false,
+                didInit: false
+            };
             _this.slider = null;
             _this.maxSlideOffset = null;
             _this.autoplayPaused = false;
@@ -362,20 +366,27 @@
             else if (prevProps.autoplay && !this.props.autoplay) {
                 this.stopAutoplay();
             }
+            if (!this.state.didInit && this.props.slides.length > 0) {
+                this.props.onInit();
+            }
             this.setMaxSlideOffset();
         };
         SliderComponent.prototype.startAutoplay = function () {
-            var cycleDuration = this.remainingAutoplayCycleDuration > 0 && this.remainingAutoplayCycleDuration < this.props.autoplaySpeed ? this.remainingAutoplayCycleDuration : this.props.autoplaySpeed;
+            var cycleDuration = this.remainingAutoplayCycleDuration > 0 &&
+                this.remainingAutoplayCycleDuration < this.props.autoplaySpeed
+                ? this.remainingAutoplayCycleDuration
+                : this.props.autoplaySpeed;
             this.runAutoplayCycle(cycleDuration);
         };
         SliderComponent.prototype.stopAutoplay = function () {
-            this.remainingAutoplayCycleDuration = (new Date()).getTime() - this.remainingAutoplayCycleDuration;
+            this.remainingAutoplayCycleDuration =
+                new Date().getTime() - this.remainingAutoplayCycleDuration;
             clearTimeout(this.autoplayCycle);
         };
         SliderComponent.prototype.runAutoplayCycle = function (cycleDuration) {
             var _this = this;
             this.autoplayCycle = setTimeout(function () {
-                _this.lastAutoplayCycleStart = (new Date()).getTime();
+                _this.lastAutoplayCycleStart = new Date().getTime();
                 _this.runAutoplayCycle(cycleDuration);
                 _this.handleNextClick();
             }, cycleDuration);
@@ -481,7 +492,8 @@
         };
         SliderComponent.prototype.handlePrevClick = function () {
             var _this = this;
-            var willChange = (this.props.slides.length >= this.props.slidesToShow && this.props.rewindOnEnd) || this.canGoPrev();
+            var willChange = (this.props.slides.length >= this.props.slidesToShow && this.props.rewindOnEnd) ||
+                this.canGoPrev();
             var slidesToRegress = this.calculateSlidesToRegress();
             Promise.resolve(this.props.onPrevClick(willChange, this.props.currentSlideIndex, this.props.currentSlideIndex - slidesToRegress)).then(function () {
                 if (willChange)
@@ -490,7 +502,8 @@
         };
         SliderComponent.prototype.handleNextClick = function () {
             var _this = this;
-            var willChange = (this.props.slides.length >= this.props.slidesToShow && this.props.rewindOnEnd) || this.canGoNext();
+            var willChange = (this.props.slides.length >= this.props.slidesToShow && this.props.rewindOnEnd) ||
+                this.canGoNext();
             var slidesToAdvance = this.calculateSlidesToAdvance();
             Promise.resolve(this.props.onNextClick(willChange, this.props.currentSlideIndex, this.props.currentSlideIndex + slidesToAdvance)).then(function () {
                 if (willChange)
@@ -506,11 +519,16 @@
             this.slider = element;
         };
         SliderComponent.prototype.render = function () {
-            return (this.props.slides.length > 0 && (preact.h("div", { ref: this.handleSliderRef, className: classNames('q-slider__slider', { 'q-slider__slider_is-vertical': this.props.vertical, 'q-slider__slider_no-sliding': this.props.slides.length <= this.props.slidesToShow }) },
+            return (this.props.slides.length > 0 && (preact.h("div", { ref: this.handleSliderRef, className: classNames("q-slider__slider", {
+                    "q-slider__slider_is-vertical": this.props.vertical,
+                    "q-slider__slider_no-sliding": this.props.slides.length <= this.props.slidesToShow
+                }) },
                 preact.h(DraggableTrack, { slidesToShow: this.props.slidesToShow, vertical: this.props.vertical, gotoSlide: this.gotoSlide, getSliderWidth: this.getSliderWidth },
                     preact.h(SlideTrack, { fade: this.props.fade, fadeDuration: this.props.fadeDuration, vertical: this.props.vertical, slidesToShow: this.props.slidesToShow, onSlideClick: this.props.onSlideClick, afterChange: this.props.afterChange })),
-                this.props.showArrows && this.props.slides.length > 1 && (preact.h(SliderNavigation, { onNextArrowClick: this.handleNextClick, onPrevArrowClick: this.handlePrevClick, nextArrow: this.props.nextArrow, prevArrow: this.props.prevArrow })),
-                this.props.showPagination && this.props.slides.length > 1 && (preact.h(SliderPagination, { slidesToShow: this.props.slidesToShow, onPaginationItemClick: this.handlePaginationItemClick, onPaginationItemRender: this.props.onPaginationItemRender })))));
+                this.props.showArrows &&
+                    this.props.slides.length > 1 && (preact.h(SliderNavigation, { onNextArrowClick: this.handleNextClick, onPrevArrowClick: this.handlePrevClick, nextArrow: this.props.nextArrow, prevArrow: this.props.prevArrow })),
+                this.props.showPagination &&
+                    this.props.slides.length > 1 && (preact.h(SliderPagination, { slidesToShow: this.props.slidesToShow, onPaginationItemClick: this.handlePaginationItemClick, onPaginationItemRender: this.props.onPaginationItemRender })))));
         };
         return SliderComponent;
     }(preact.Component));
@@ -598,7 +616,8 @@
             afterChange: function () { },
             onPaginationItemRender: function (props) { return props; },
             onNextClick: function () { },
-            onPrevClick: function () { }
+            onPrevClick: function () { },
+            onInit: function () { }
         };
         return QSlider;
     }(preact.Component));

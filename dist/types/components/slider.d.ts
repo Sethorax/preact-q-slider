@@ -20,12 +20,13 @@ export interface SliderConfigProps extends ChildConfigProps {
     afterChange?: (currentSlideIndex: number, previousSlideIndex: number) => Promise<void> | void;
     onNextClick?: (willChange: boolean, currentSlideIndex: number, nextSlideIndex: number) => Promise<void> | void;
     onPrevClick?: (willChange: boolean, currentSlideIndex: number, nextSlideIndex: number) => Promise<void> | void;
-    onFirstSlideRender?: () => void;
+    onInit?: () => void;
 }
 export interface SliderProps extends SliderConfigProps {
 }
 interface SliderState {
     renderChildren: boolean;
+    didInit: boolean;
 }
 export declare const Slider: ComponentConstructor<SliderProps, SliderState>;
 export {};
